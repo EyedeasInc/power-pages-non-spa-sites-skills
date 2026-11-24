@@ -174,6 +174,63 @@ Invoke a skill by name (e.g. `/pp-webtemplate`) or just describe the task
 > personal skills folder (`~/.claude/skills/` or `~/.copilot/skills/`). Skills that link to
 > `../../references/` need that folder copied alongside.
 
+### Sample prompts (new in 0.12.0)
+
+**`/pp-licensing`: packs-first** (you already own packs, or have a quote)
+
+```text
+/pp-licensing We bought 3 authenticated packs and 2 anonymous packs.
+We want to split them across Prod (250 signed-in users, 900 anonymous visitors a month)
+and Test (25 signed-in users, no anonymous). Is that split valid, how much headroom
+do we have, and would pay-as-you-go have been cheaper?
+```
+
+**`/pp-licensing`: usage-first** (what should we buy?)
+
+```text
+/pp-licensing Estimate the monthly cost for a client proposal.
+- Partner portal, Prod environment: about 3,000 people sign in each month,
+  150 of them are staff with Power Apps per user licenses. 20,000 anonymous visitors.
+- Events site, also in Prod: anonymous only, about 4,000 visitors a month.
+- Portal UAT, Test environment: 30 testers who sign in.
+Compare capacity packs with pay-as-you-go and give me the cheapest mix.
+```
+
+**`/pp-licensing`: quick questions**
+
+```text
+/pp-licensing What does one authenticated pack cover, and how many environments can it serve?
+/pp-licensing Our member site is sign-in only, about 400 members a month. Do we need anonymous capacity?
+/pp-licensing At what number of signed-in users does tier 2 become cheaper than tier 1?
+/pp-licensing Here are the counts from the admin center's Power Pages authenticated and anonymous reports: ...
+```
+
+For an accurate estimate, give **monthly users who actually visit** (not everyone who could),
+**per site** (one person on two sites counts twice), and the **environment** of each site (the
+25 authenticated / 200 anonymous minimums apply per environment).
+
+**New checks and recipes in other skills**
+
+```text
+/pp-securityreview Run check 8 on our site: authorization model, Download buttons on lists,
+permissions still live after we removed them in dev, and flows that trust a record ID.
+
+/pp-columnpermission Hide the SSN column from the Partner role. Check first whether the site
+uses enhanced authorization.
+
+/pp-pageaccessrule Make the whole site sign-in only, but keep the sign-in and registration
+pages styled for anonymous visitors.
+
+/pp-cache My site setting change isn't showing. Which cache layer is it, and should I use
+Clear config or Clear cache?
+
+/pp-list Highlight rows on the Orders list where status is Overdue, after the grid loads.
+
+/pp-webapi Read orders with their product names in one call using FetchXML.
+
+/pp-website Connect www.contoso.com to the site. We have WAF turned on.
+```
+
 ## Requirements
 
 - A Power Pages **enhanced data model** site and Dataverse access — a **Dataverse MCP** (preferred
