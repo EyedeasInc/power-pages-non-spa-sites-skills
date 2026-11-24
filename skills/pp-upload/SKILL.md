@@ -1,6 +1,6 @@
 ---
 name: pp-upload
-description: "Upload a non-SPA Power Pages site's content from a local folder to a Dataverse environment with the pac pages upload CLI — the bulk push tool for promoting a site across environments (dev → test → prod), using deployment profiles for per-environment values. WHEN: upload a Power Pages site, deploy portal content, promote a site to another environment, push the site folder to Dataverse, pac pages upload, publish downloaded site content, apply a deployment profile, force upload all site content, move a portal from dev to prod."
+description: "Upload a non-SPA Power Pages site's content from a local folder to a Dataverse environment with the pac pages upload CLI — the bulk push tool for promoting a site across environments (dev → test → prod), using deployment profiles for per-environment values. If Microsoft's power-pages plugin is installed, prefer its /deploy-site (non-SPA route with data-model and site-identity checks). Any upload can overwrite live pp-* edits made after the download. WHEN: upload a Power Pages site, deploy portal content, promote a site to another environment, push the site folder to Dataverse, pac pages upload, publish downloaded site content, apply a deployment profile, force upload all site content, move a portal from dev to prod."
 license: MIT
 metadata:
   author: Victor Dantas
@@ -8,6 +8,10 @@ metadata:
 ---
 
 # Upload a Power Pages site's content to an environment
+
+> **Microsoft's plugin.** Microsoft's power-pages plugin ships `/deploy-site`, whose non-SPA route uploads a downloaded site with data-model and site-identity checks. Prefer it when that plugin is installed; this skill stays for setups without it.
+
+> **Live edits and uploads.** The content `pp-*` skills patch live records. A `pac pages upload`, from this plugin's `/pp-upload` or from Microsoft's `/deploy-site`, pushes the whole local folder and can overwrite any live change made after that folder was downloaded. Download again right before local edits, and download or diff again before uploading if the live site changed in between.
 
 Push a non-SPA (enhanced-data-model, `mspp_*`) Power Pages site from a local folder into a
 Dataverse environment with **`pac pages upload`**. This is the **bulk** promotion tool — the

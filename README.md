@@ -6,8 +6,10 @@ the Dataverse-backed Studio/Liquid sites on the **enhanced data model** (`mspp_*
 [Power Pages plugin](https://github.com/microsoft/power-platform-skills/blob/main/plugins/power-pages/README.md).
 Since version 3.0.0, Microsoft's plugin creates, edits and scans non-SPA sites itself (`/create-site`,
 `/edit-site`, `/analyze-performance`, in preview). Use it to start and reshape a site; use these `pp-*`
-skills to work record by record, including the basic forms, lists, multistep forms, web roles and
-table, column and page permissions that Microsoft's non-SPA workflow does not build.
+skills to work record by record on the live site, including the basic forms, lists, multistep forms,
+column permissions, page access rules, redirects and navigation that Microsoft's non-SPA workflow
+does not build. See [Using it with Microsoft's Power Pages plugin](#using-it-with-microsofts-power-pages-plugin)
+for which plugin to use for each task.
 
 > **Renamed in 0.10.0.** This plugin was `powerpages-traditional-site` in the
 > `power-pages-traditional-sites-skills` repo. Microsoft now calls these sites non-SPA, so the plugin is
@@ -22,6 +24,46 @@ table, column and page permissions that Microsoft's non-SPA workflow does not bu
 > [`references/non-spa-site-editing-model.md`](references/non-spa-site-editing-model.md) —
 > the component storage model, the read-live-first rule, the robust-parse / PATCH technique, the
 > shared auth pattern, and the cache-flush rule. Read it first.
+
+## Using it with Microsoft's Power Pages plugin
+
+The two plugins work in different ways, and they can run side by side.
+
+- **Microsoft's plugin works on a local copy.** It edits a site downloaded with `pac pages download`,
+  tracks the changes in Git and pushes them back with `/deploy-site`. Its basic form and list
+  components only reference records that already exist.
+- **These `pp-*` skills work on the live site.** They read and patch the `mspp_*` records and
+  `powerpagecomponent` rows through the Dataverse Web API, then flush the cache.
+
+When both are installed, pick by task:
+
+| Task | Use |
+|---|---|
+| Create a new non-SPA site from a template | Microsoft `/create-site`, `/activate-site` |
+| Reshape pages, content, styling and layout across a site | Microsoft `/edit-site`, `/author-webpage-content` |
+| Deploy a downloaded site to an environment | Microsoft `/deploy-site` |
+| Bootstrap 3 to 5 | Microsoft `/migrate-bootstrap` |
+| Standard to Enhanced data model | Microsoft `/migrate-datamodel` |
+| Firewall (WAF) rules | Microsoft `/manage-firewall` |
+| Security headers and CSP | Microsoft `/manage-headers` |
+| Full release-readiness security review | Microsoft `/security-review`, then `/pp-securityreview` for the Liquid and Web API checks |
+| Performance scan, design review, cross-environment comparison, ALM | Microsoft `/analyze-performance`, `/exceptional-web-design`, `/compare-site-configurations`, `/plan-alm` |
+| Create or edit basic forms, multistep forms and lists | `/pp-basicform`, `/pp-multistepform`, `/pp-list` |
+| Column permissions and page access rules | `/pp-columnpermission`, `/pp-pageaccessrule` |
+| Navigation menus, redirects, site markers | `/pp-weblink`, `/pp-redirect`, `/pp-sitemarker` |
+| Change one live record now (a template, snippet, web file, page, role, permission, Web API setting) | the matching `pp-*` skill |
+| A change does not show on the site | `/pp-cache` |
+| Writing or debugging Liquid | `/pp-liquid` |
+| Site start, stop, restart, trial to production, visibility, delete | `/pp-website` |
+
+The `pp-*` skills that overlap with Microsoft's (`pp-bootstrap-migrate`, `pp-datamodel-migrate`,
+`pp-firewall`, `pp-headers`, `pp-website`, `pp-upload`) stay in this plugin for anyone who does not
+install Microsoft's. Their descriptions point to the Microsoft skill when it is available.
+
+> **Do not mix live edits with a stale download.** An upload pushes the whole local folder, so
+> `/deploy-site` (Microsoft) or `/pp-upload` can overwrite any change a `pp-*` skill made live after
+> that folder was downloaded. Download again right before you start local edits, and download or
+> diff again before you upload if anyone changed the live site in between.
 
 ## Skills
 

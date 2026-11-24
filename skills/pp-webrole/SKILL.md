@@ -1,6 +1,6 @@
 ---
 name: pp-webrole
-description: "Create, edit, and delete web roles (mspp_webrole) on a non-SPA (enhanced-data-model, mspp_*) Power Pages site — the access groups that table permissions, web page access rules, and cloud-flow/Web API access bind to. Covers the two special auto-managed roles (Anonymous Users, Authenticated Users — exactly one each) and custom roles, plus assigning a role to a contact. WHEN: create a web role, add a portal role, set up user roles, manage mspp_webrole, make a members-only or admin role, assign a contact to a web role, why is my table permission not applying (no role bound), anonymous vs authenticated role, delete a web role."
+description: "Create, edit, and delete web roles (mspp_webrole) on a non-SPA (enhanced-data-model, mspp_*) Power Pages site — the access groups that table permissions, web page access rules, and cloud-flow/Web API access bind to. Covers the two special auto-managed roles (Anonymous Users, Authenticated Users — exactly one each) and custom roles, plus assigning a role to a contact. Microsoft's /create-webroles also handles roles on a downloaded copy; use this skill to change roles on the live site, including assigning roles to contacts. WHEN: create a web role, add a portal role, set up user roles, manage mspp_webrole, make a members-only or admin role, assign a contact to a web role, why is my table permission not applying (no role bound), anonymous vs authenticated role, delete a web role."
 license: MIT
 metadata:
   author: Victor Dantas
@@ -8,6 +8,8 @@ metadata:
 ---
 
 # Web roles on a Power Pages site — create, assign, manage
+
+> **Microsoft's plugin.** Microsoft's power-pages plugin can also create web roles on a downloaded site copy with `/create-webroles`. Use this skill to change roles on the live site, including assigning a role to a contact.
 
 Manage **web roles** (`mspp_webrole`) on a non-SPA (enhanced-data-model, `mspp_*`) Power
 Pages site through the Dataverse Web API. A web role is the **access group** that everything

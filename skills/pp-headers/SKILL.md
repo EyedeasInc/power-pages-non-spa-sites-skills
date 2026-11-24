@@ -1,6 +1,6 @@
 ---
 name: pp-headers
-description: "Inspect and configure the security response headers a non-SPA (enhanced-data-model, mspp_*) Power Pages site sends to browsers — Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, HSTS, referrer/permissions policy, and cookie/CORS behavior — through the mspp_sitesetting records that drive them, then verify the live responses. WHEN: configure security headers, add or fix a Content Security Policy, set CSP on a portal, add X-Frame-Options / HSTS / nosniff, fix CSP errors, harden browser headers, clickjacking protection, cookie SameSite, manage-headers, why is my portal missing security headers."
+description: "Inspect and configure the security response headers a non-SPA (enhanced-data-model, mspp_*) Power Pages site sends to browsers — Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, HSTS, referrer/permissions policy, and cookie/CORS behavior — through the mspp_sitesetting records that drive them, then verify the live responses. If Microsoft's power-pages plugin is installed, prefer its /manage-headers; use this skill when that plugin is not installed, or to patch the live mspp_sitesetting records directly. WHEN: configure security headers, add or fix a Content Security Policy, set CSP on a portal, add X-Frame-Options / HSTS / nosniff, fix CSP errors, harden browser headers, clickjacking protection, cookie SameSite, manage-headers, why is my portal missing security headers."
 license: MIT
 metadata:
   author: Victor Dantas
@@ -8,6 +8,8 @@ metadata:
 ---
 
 # Security headers & CSP on a Power Pages site
+
+> **Microsoft's plugin.** Microsoft's power-pages plugin ships `/manage-headers` for the same headers. Prefer it when that plugin is installed; use this skill without it, or when you want to patch the live `mspp_sitesetting` records directly and check the responses on the wire.
 
 Configure the **security response headers** a non-SPA (enhanced-data-model, `mspp_*`) Power
 Pages site sends to browsers — driven by **`mspp_sitesetting`** records — then verify the live

@@ -1,6 +1,6 @@
 ---
 name: pp-website
-description: "Provision and run the Power Pages WEBSITE itself — the site record and its lifecycle — on a non-SPA (enhanced-data-model, mspp_*) site, using the pac power-pages CLI command group (Preview). Create a new website from a template, list and inspect sites, start / stop / restart, convert a trial to production, change site visibility and the security group, and delete a site. This is the site container; page/template/web-file CONTENT is authored with the other pp-* skills through the mspp_ model. WHEN: create a Power Pages website, provision a new portal, spin up a site, list my Power Pages sites, get a website id, start or stop or restart a portal, take a site offline, convert a trial site to production, change site visibility, set the site security group, delete a Power Pages website, pac power-pages, which template to use for a new site."
+description: "Provision and run the Power Pages WEBSITE itself — the site record and its lifecycle — on a non-SPA (enhanced-data-model, mspp_*) site, using the pac power-pages CLI command group (Preview). Create a new website from a template, list and inspect sites, start / stop / restart, convert a trial to production, change site visibility and the security group, and delete a site. This is the site container; page/template/web-file CONTENT is authored with the other pp-* skills through the mspp_ model. To create a new site from a template, prefer Microsoft's /create-site and /activate-site when the power-pages plugin is installed; this skill covers the running site's lifecycle. WHEN: create a Power Pages website, provision a new portal, spin up a site, list my Power Pages sites, get a website id, start or stop or restart a portal, take a site offline, convert a trial site to production, change site visibility, set the site security group, delete a Power Pages website, pac power-pages, which template to use for a new site."
 license: MIT
 metadata:
   author: Victor Dantas
@@ -8,6 +8,8 @@ metadata:
 ---
 
 # The Power Pages website itself — provision, run, retire
+
+> **Microsoft's plugin.** To create a new site from a template, prefer Microsoft's `/create-site` and `/activate-site` when the power-pages plugin is installed. Use this skill for the running site: list, start, stop, restart, trial to production, visibility, security group and delete.
 
 Manage the **site container** on a non-SPA (enhanced-data-model, `mspp_*`) Power Pages
 site through the **`pac power-pages`** CLI command group (Preview). This is the layer *above*
