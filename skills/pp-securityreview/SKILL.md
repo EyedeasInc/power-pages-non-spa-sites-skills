@@ -1,6 +1,6 @@
 ---
 name: pp-securityreview
-description: "Run a security review of a non-SPA (enhanced-data-model, mspp_*) Power Pages site, focused on the failure modes specific to this platform rather than generic web scanning — stored XSS in web templates and page JS that interpolates Dataverse fields raw, Web API column over-exposure, missing or over-broad table permissions, accidental anonymous access, weak security headers/CSP, Liquid data leaks, and secrets served to the browser. Produces a fill-in findings report. WHEN: security review a Power Pages site, audit portal security, check for portal XSS, review table permissions, find data exposure, portal security checklist, portal security audit, harden a Power Pages site, review web templates for XSS, check Web API exposure, review anonymous access, check CSP/security headers on a portal, run the platform security scan, start a quick or deep scan, get the security scan report or score, check or enable the Web Application Firewall (WAF)."
+description: "Run a security review of a non-SPA (enhanced-data-model, mspp_*) Power Pages site, focused on the failure modes specific to this platform rather than generic web scanning — stored XSS in web templates and page JS that interpolates Dataverse fields raw, Web API column over-exposure, missing or over-broad table permissions, accidental anonymous access, weak security headers/CSP, Liquid data leaks, and secrets served to the browser. Produces a fill-in findings report. For a full release-readiness review (code, dependencies, live scan, headers, firewall, auth, permissions), run Microsoft's /security-review first when installed; this skill adds the platform-specific Liquid, Web API and permission checks. WHEN: security review a Power Pages site, audit portal security, check for portal XSS, review table permissions, find data exposure, portal security checklist, portal security audit, harden a Power Pages site, review web templates for XSS, check Web API exposure, review anonymous access, check CSP/security headers on a portal, run the platform security scan, start a quick or deep scan, get the security scan report or score, check or enable the Web Application Firewall (WAF)."
 license: MIT
 metadata:
   author: Victor Dantas
@@ -8,6 +8,8 @@ metadata:
 ---
 
 # Security review — non-SPA Power Pages site
+
+> **Microsoft's plugin.** For a full release-readiness review, run Microsoft's `/security-review` first when the power-pages plugin is installed. It covers code, dependencies, the live scan, headers, firewall, authentication and permissions. This skill then adds the checks specific to this platform: raw Dataverse fields in Liquid and page JS, Web API column exposure, and permission gaps.
 
 Audit an **enhanced-data-model** (`mspp_*`) Power Pages site for the vulnerabilities that
 are *specific to this platform*: Dataverse data flowing into the browser through web

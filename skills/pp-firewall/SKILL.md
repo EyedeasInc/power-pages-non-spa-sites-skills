@@ -1,6 +1,6 @@
 ---
 name: pp-firewall
-description: "Inspect and configure the Web Application Firewall (WAF) and IP allow-list in front of a production Power Pages site using the pac power-pages CLI (Preview) — enable/disable WAF, read and create managed/custom rules (IP/country/path blocks, rate limits), set enforcement mode (Prevention vs Detection), and restrict access to an IP allow-list. WHEN: enable the Power Pages WAF, configure the web application firewall, block an IP or country on the portal, add a rate limit, set WAF to prevention or detection mode, restrict the site to an IP allow-list, pac power-pages waf, harden a production portal against bots/brute force, check WAF status."
+description: "Inspect and configure the Web Application Firewall (WAF) and IP allow-list in front of a production Power Pages site using the pac power-pages CLI (Preview) — enable/disable WAF, read and create managed/custom rules (IP/country/path blocks, rate limits), set enforcement mode (Prevention vs Detection), and restrict access to an IP allow-list. If Microsoft's power-pages plugin is installed, prefer its /manage-firewall; use this skill when that plugin is not installed. WHEN: enable the Power Pages WAF, configure the web application firewall, block an IP or country on the portal, add a rate limit, set WAF to prevention or detection mode, restrict the site to an IP allow-list, pac power-pages waf, harden a production portal against bots/brute force, check WAF status."
 license: MIT
 metadata:
   author: Victor Dantas
@@ -8,6 +8,8 @@ metadata:
 ---
 
 # Web Application Firewall & IP allow-list for a Power Pages site
+
+> **Microsoft's plugin.** Microsoft's power-pages plugin ships `/manage-firewall` for the same WAF and rule work. Prefer it when that plugin is installed; this skill stays for setups without it.
 
 Inspect and configure the **WAF** (Azure Front Door-backed) and the **IP restriction allow-list**
 in front of a Power Pages site with the **`pac power-pages`** CLI command group (Preview). This

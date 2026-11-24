@@ -9,6 +9,8 @@ metadata:
 
 # Download a Power Pages site's content to disk
 
+> **Live edits and uploads.** The content `pp-*` skills patch live records. A `pac pages upload`, from this plugin's `/pp-upload` or from Microsoft's `/deploy-site`, pushes the whole local folder and can overwrite any live change made after that folder was downloaded. Download again right before local edits, and download or diff again before uploading if the live site changed in between.
+
 Pull a non-SPA (enhanced-data-model, `mspp_*`) Power Pages site's content to a local folder
 with **`pac pages download`** — for **backup**, **diff**, **offline inspection**, and **source
 control**. Use `pac pages clone` to copy already-downloaded content into a new working folder.

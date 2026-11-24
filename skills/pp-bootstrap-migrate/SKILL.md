@@ -1,6 +1,6 @@
 ---
 name: pp-bootstrap-migrate
-description: "Migrate a non-SPA (Liquid) Power Pages site's markup from Bootstrap 3 to Bootstrap 5 using the pac pages bootstrap-migrate CLI engine, then fix the residual grid/navbar/card/page-header changes the engine can only flag. Non-destructive: the engine writes a new V5 copy of downloaded site content and never edits the source. WHEN: migrate Power Pages from Bootstrap 3 to Bootstrap 5, upgrade bootstrap on a portal, bootstrap v3 to v5, fix bootstrap classes on Liquid templates, pac pages bootstrap-migrate, modernize portal markup, my portal still uses Bootstrap 3."
+description: "Migrate a non-SPA (Liquid) Power Pages site's markup from Bootstrap 3 to Bootstrap 5 using the pac pages bootstrap-migrate CLI engine, then fix the residual grid/navbar/card/page-header changes the engine can only flag. Non-destructive: the engine writes a new V5 copy of downloaded site content and never edits the source. If Microsoft's power-pages plugin is installed, prefer its /migrate-bootstrap (same pac engine, plus upload and Bootstrap 5 flag check); use this skill when that plugin is not installed. WHEN: migrate Power Pages from Bootstrap 3 to Bootstrap 5, upgrade bootstrap on a portal, bootstrap v3 to v5, fix bootstrap classes on Liquid templates, pac pages bootstrap-migrate, modernize portal markup, my portal still uses Bootstrap 3."
 license: MIT
 metadata:
   author: Victor Dantas
@@ -8,6 +8,8 @@ metadata:
 ---
 
 # Bootstrap 3 → 5 migration for a non-SPA Power Pages site
+
+> **Microsoft's plugin.** Microsoft's power-pages plugin ships `/migrate-bootstrap` on the same `pac pages bootstrap-migrate` engine, and it also uploads the result and verifies the Bootstrap 5 runtime flag. Prefer it when that plugin is installed; this skill stays for setups without it.
 
 Upgrade the markup of a **non-SPA (Liquid) Power Pages** site from **Bootstrap 3** to
 **Bootstrap 5** with the **`pac pages bootstrap-migrate`** engine. The engine does the bulk,

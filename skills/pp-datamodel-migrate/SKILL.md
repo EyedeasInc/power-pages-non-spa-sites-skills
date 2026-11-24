@@ -1,6 +1,6 @@
 ---
 name: pp-datamodel-migrate
-description: "Migrate a Power Pages site's DATA MODEL between Standard (adx_) and Enhanced (mspp_) using the pac pages migrate-datamodel CLI — the prerequisite that gets a site onto the enhanced model this whole plugin assumes. Run the migration, check its status, update the site's data-model version once data is moved, generate a site-customization report, or revert an enhanced site back to standard. WHEN: migrate a Power Pages site to the enhanced data model, move from adx_ to mspp_, upgrade the portal data model, check data model migration status, my site is on the standard/old data model, convert portal to enhanced data model, revert to standard data model, pac pages migrate-datamodel, update data model version, why don't the mspp_ tables exist on my site."
+description: "Migrate a Power Pages site's DATA MODEL between Standard (adx_) and Enhanced (mspp_) using the pac pages migrate-datamodel CLI — the prerequisite that gets a site onto the enhanced model this whole plugin assumes. Run the migration, check its status, update the site's data-model version once data is moved, generate a site-customization report, or revert an enhanced site back to standard. If Microsoft's power-pages plugin is installed, prefer its /migrate-datamodel (same pac command); use this skill when that plugin is not installed. WHEN: migrate a Power Pages site to the enhanced data model, move from adx_ to mspp_, upgrade the portal data model, check data model migration status, my site is on the standard/old data model, convert portal to enhanced data model, revert to standard data model, pac pages migrate-datamodel, update data model version, why don't the mspp_ tables exist on my site."
 license: MIT
 metadata:
   author: Victor Dantas
@@ -8,6 +8,8 @@ metadata:
 ---
 
 # Migrate a Power Pages site's data model (standard ↔ enhanced)
+
+> **Microsoft's plugin.** Microsoft's power-pages plugin ships `/migrate-datamodel` on the same `pac pages migrate-datamodel` command. Prefer it when that plugin is installed; this skill stays for setups without it.
 
 Move a site between the **Standard** data model (`adx_*` tables) and the **Enhanced** data
 model (`mspp_*` tables + `powerpagecomponent`) with **`pac pages migrate-datamodel`**. This is
