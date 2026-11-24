@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Power Pages non-SPA site skills for Claude Code and GitHub Copilot.",
-    "version": "0.11.0"
+    "version": "0.12.0"
   },
   "plugins": [
     {
       "name": "powerpages-non-spa-site",
       "source": "./",
       "description": "Build, integrate, and secure non-SPA Power Pages sites (enhanced data model, mspp_*) through the Dataverse Web API and the pac CLI.",
-      "version": "0.11.0",
+      "version": "0.12.0",
       "author": {
         "name": "Victor Dantas"
       },

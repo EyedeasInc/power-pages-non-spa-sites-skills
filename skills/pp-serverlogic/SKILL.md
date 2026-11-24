@@ -4,7 +4,7 @@ description: "Create, edit, deploy, and remove server logic — server-side Java
 license: MIT
 metadata:
   author: Victor Dantas
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Server logic on a Power Pages site — create, edit, deploy, remove
@@ -163,4 +163,7 @@ env var. `--dry-run` prints the target and payload without writing.
 
 - Server logic exposes the **`Server.*`** objects (HttpClient, Dataverse, **CloudFlow.TriggerAsync** to run a Power Automate flow, SiteSetting, EnvironmentVariable, Website, User, Logger, Context).
 - Invoke from a client script (`shell.safeAjax` — `/_api/serverlogics/<name>`) **or** from Liquid (`{% serverlogic %}`). Never store secrets in code (use Key Vault + env vars). The runtime rejects `eval`, `require`, `fetch`, `process.*`, `setTimeout`, `__proto__`, etc.
-- Full detail: `../../references/server-logic-objects.md`.
+- Site settings: `ServerLogic/Enabled`, `ServerLogic/AllowedDomains` (set it whenever code calls out), `ServerLogic/TimeoutInSeconds` (120 default, 240 max), `ServerLogic/AllowNetworkingToAllDomains`. A tenant admin can block outbound calls per site; when on, every `HttpClient` call fails. Outbound HTTPS needs TLS 1.3.
+- `RetrieveRecord` and `RetrieveMultipleRecords` both take an optional `skipCache` boolean; use it to read a row the same function just wrote.
+- A function that takes a record ID from the browser and acts on it must check the caller owns that record (compare with `Server.User`); otherwise anyone with the web role can pass any ID. See `pp-securityreview` check 8d.
+- Full detail: `../../references/server-logic-objects.md` ([Server logic overview](https://learn.microsoft.com/power-pages/configure/server-logic-overview)).

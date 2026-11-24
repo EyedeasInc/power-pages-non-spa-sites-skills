@@ -1,0 +1,38 @@
+{
+  "checked": "2026-11-24",
+  "currency": "USD",
+  "price_basis": "Microsoft list prices for the commercial channel. Education, non-profit and negotiated agreements differ.",
+  "sources": {
+    "licensing_faq": "https://learn.microsoft.com/power-platform/admin/powerapps-flow-licensing-faq#power-pages",
+    "payg_meters": "https://learn.microsoft.com/power-platform/admin/pay-as-you-go-meters",
+    "payg_faq": "https://learn.microsoft.com/power-platform/admin/pay-as-you-go-issues-faq",
+    "consumption_reports": "https://learn.microsoft.com/power-pages/admin/website-consumption-reports"
+  },
+  "subscription": {
+    "authenticated": {
+      "users_per_pack": 100,
+      "environment_minimum_users": 25,
+      "tiers": [
+        {"tier": 1, "min_packs": 1, "price_per_pack": 200.0},
+        {"tier": 2, "min_packs": 100, "price_per_pack": 75.0},
+        {"tier": 3, "min_packs": 1000, "price_per_pack": 50.0}
+      ],
+      "storage_per_pack_gb": {"database": 2, "file": 16}
+    },
+    "anonymous": {
+      "users_per_pack": 500,
+      "environment_minimum_users": 200,
+      "tiers": [
+        {"tier": 1, "min_packs": 1, "price_per_pack": 75.0},
+        {"tier": 2, "min_packs": 20, "price_per_pack": 37.5},
+        {"tier": 3, "min_packs": 200, "price_per_pack": 25.0}
+      ],
+      "storage_per_pack_gb": {"database": 0.5, "file": 4}
+    },
+    "tenant_database_storage_gb": 5
+  },
+  "pay_as_you_go": {
+    "authenticated_per_active_user_per_website": 4.0,
+    "anonymous_per_active_user_per_website": 0.30
+  }
+}

@@ -4,7 +4,7 @@ description: "Provision and run the Power Pages WEBSITE itself — the site reco
 license: MIT
 metadata:
   author: Victor Dantas
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # The Power Pages website itself — provision, run, retire
@@ -156,6 +156,35 @@ pac power-pages update-portal-security-group   --id <SITEID> --security-group-id
 Site visibility gates whether the site is reachable at all; the security group restricts who
 in the tenant can see it. (Per-page and per-table access *inside* the site is the job of web
 roles + `pp-tablepermission`, not these commands.)
+
+## Custom domain (Learn rules that trip people up)
+
+([Add a custom domain name](https://learn.microsoft.com/power-pages/admin/add-custom-domain))
+
+- The site must be in **production** state; trials can't take a custom domain.
+- **One custom domain per site.** Add it in the admin center (Site Details → Connect Custom
+  Domain) or with `pac power-pages create-custom-domain`.
+- **No root (apex) domain**: the host name is a **CNAME** to the site's `powerappsportals.com`
+  URL, and DNS doesn't allow a CNAME at the root. Use `www.contoso.com` and redirect the apex at
+  the DNS provider.
+- The CNAME must resolve **publicly** (`dig CNAME <hostname>`); private DNS zones fail validation.
+- **Microsoft managed certificate** isn't offered while **CDN or WAF** is on; those sites get
+  Azure Front Door certificates after a TXT validation record. Delete any stale
+  `asuid.<hostname>` TXT record before binding.
+- Your own certificate: password-protected PFX, TripleDES (not AES-256), 2048-bit key, full
+  chain, SHA2, server-authentication EKU. You renew it yourself.
+
+## Maintenance mode
+
+Admin center → **Site Actions → Enable maintenance mode**. Visitors see a maintenance page on
+every URL except `/_services/about`; enabling, updating or disabling it restarts the site for a
+few minutes. ([Maintenance mode](https://learn.microsoft.com/power-pages/admin/enable-maintenance-mode))
+
+- A **custom** maintenance page must be a public URL that is **not** hosted on the same Power
+  Pages site, and must not send `X-Frame-Options: SAMEORIGIN` (it's shown in an iframe).
+  Otherwise the default page appears with a note for administrators.
+- Use it for solution upgrades, data migrations and bulk `pp-upload` runs, so visitors don't hit
+  half-updated pages.
 
 ## Data-model / bootstrap stamps
 

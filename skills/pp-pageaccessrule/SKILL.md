@@ -4,7 +4,7 @@ description: "Create, edit, and delete web page access control rules (mspp_webpa
 license: MIT
 metadata:
   author: Victor Dantas
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Web page access control rules — create, edit, delete
@@ -80,6 +80,32 @@ DELETE /api/data/v9.2/mspp_webpageaccesscontrolrules(<RULEID>)/mspp_webpageacces
 DELETE /api/data/v9.2/mspp_webpageaccesscontrolrules(<RULEID>)
 ```
 
+## Recipe — make the whole site sign-in only
+
+Learn's planning guide: to make a site authenticated-only, put the page permission on the **Home
+page**; a rule on the home page applies to the entire site. Do it with a rule, not a JavaScript
+redirect, which only hides content after the browser has already received it.
+([Plan your project: authenticated users](https://learn.microsoft.com/power-pages/configure/planning-power-pages-project) ·
+[Set page permissions](https://learn.microsoft.com/power-pages/security/page-security))
+
+1. Create a **Restrict Read** rule on the Home page, scope **Exclude direct child web files**,
+   bound to **Authenticated Users** (and any custom roles that need access).
+   - The scope matters: `Bootstrap.min.css`, `Theme.css` and other site files sit under the home
+     page. With scope **All content** the sign-in page renders unstyled for anonymous visitors.
+2. Make sure the sign-in, registration and invitation pages still work while signed out; test
+   them in a private window.
+3. Check for a **Grant Change** rule on the Home page with scope **All content**: grant change
+   also grants read and **overrides** restrict read site-wide. Remove a role from that rule if it
+   must not see everything.
+4. Learn allows only **one** active restrict-read rule per page; a second one raises "multiple,
+   conflicting access control rules". Deactivate extras instead of stacking them.
+5. Don't bind page rules to the **Anonymous Users** role directly (the Portal Management app
+   warns against it).
+
+A sign-in-only site still needs table permissions for its data: page rules gate pages, not the
+Web API, Liquid or lists. Admins can also block anonymous Dataverse access per site with the
+[anonymous-access governance control](https://learn.microsoft.com/power-pages/security/disable-anonymous-access).
+
 ## Step 5 — Flush cache, then test as each user
 
 Flush (`pp-cache`), then verify **both directions**: sign in as a bound-role user and confirm the
@@ -97,4 +123,5 @@ are how you make a members area — test the negative case, not just the positiv
 ## Microsoft docs & shared references
 
 - Page access rules gate **pages** by web role; table permissions gate **data**. Both are deny-by-default.
+- Grant Change rules also grant read and win over Restrict Read; one active restrict-read rule per page. ([Set page permissions](https://learn.microsoft.com/power-pages/security/page-security))
 - Full detail: `../../references/security-model.md`.

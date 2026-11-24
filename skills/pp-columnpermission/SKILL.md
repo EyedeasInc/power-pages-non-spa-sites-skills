@@ -4,7 +4,7 @@ description: "Create, edit, and delete column-level security (mspp_columnpermiss
 license: MIT
 metadata:
   author: Victor Dantas
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Column-level security on a Power Pages site — create, edit, delete
@@ -18,6 +18,20 @@ table permission — so a web role can access a table but **not** its sensitive 
 > a column-permission **profile** hangs off a table permission (`mspp_entitypermission`) and is
 > bound to **web roles**; each **column permission** in the profile sets per-column rights.
 > Without a profile, a table permission exposes **every** readable column.
+
+> ⚠️ **Column permissions only apply to the portals Web API** (`/_api/...`). Forms, lists, Liquid,
+> FetchXML and search do **not** honour them, so a hidden column can still render through those
+> paths. Keep sensitive columns off the forms and views those components use.
+> ([Set column permissions](https://learn.microsoft.com/power-pages/security/column-permissions))
+
+> ⚠️ **Enhanced authorization bypasses column permissions.** Sites with **Enable Enhanced
+> Authorization** turned on (preview; Power Pages Core 1.1.2605.258 or later) ignore
+> `mspp_columnpermission*` entirely. Those sites use **Dataverse column security profiles**
+> instead, managed in the Power Platform admin center, and those profiles apply to forms, lists
+> and the Web API alike. Check which model the site uses before creating anything here; on an
+> enhanced-authorization site this skill's records have no effect.
+> ([Enable enhanced authorization](https://learn.microsoft.com/power-pages/security/unify-pages-security-with-dataverse) ·
+> [Column security profile](https://learn.microsoft.com/power-pages/security/column-security-profile))
 
 ## The model
 
@@ -52,9 +66,9 @@ POST /api/data/v9.2/mspp_columnpermissionprofiles
 
 ## Step 3 — Add per-column rights
 
-Add a `mspp_columnpermission` for each column you're restricting. Only list the columns you're
-constraining; how unlisted columns behave (default allow vs deny) depends on the profile
-model — **verify on your site** with a test role:
+Add a `mspp_columnpermission` for each column you're restricting. Per Learn, columns you don't
+list follow the profile's **All Column Permissions** setting (Create / Read / Update in any
+combination), so set that first, then add rows only for the exceptions:
 
 ```jsonc
 POST /api/data/v9.2/mspp_columnpermissions
@@ -89,8 +103,9 @@ DELETE /api/data/v9.2/mspp_columnpermissionprofiles(<PROFILEID>)  // remove the 
 ## Step 6 — Flush cache, then test as the restricted role
 
 Flush (`pp-cache`), then sign in **as a user in the bound role** and confirm the restricted
-columns are hidden/read-only on the relevant forms, lists, and Web API responses — and that an
-**unbound** role still sees them as intended. Column security is only proven by the negative test.
+columns are missing or rejected in **Web API** responses (`/_api/<entityset>?$select=<column>`),
+and that an **unbound** role still gets them as intended. Column security is only proven by the
+negative test. Forms and lists are not covered by this test (see the warning at the top).
 
 ## Field & option reference
 
@@ -104,5 +119,11 @@ columns are hidden/read-only on the relevant forms, lists, and Web API responses
 
 ## Microsoft docs & shared references
 
-- Column permissions add field-level restrictions on top of table permissions — the Web API and forms/lists both honor them. (Microsoft's official plugin does not cover column-level security; this skill does.)
+- Column permissions add field-level restrictions on top of table permissions for the **portals Web
+  API only**. Table permissions are evaluated first; with no column permissions, the table
+  permission applies to every column. On enhanced-authorization sites use Dataverse column
+  security profiles instead. (Microsoft's official plugin does not cover column-level security;
+  this skill does.)
+- Learn: [Set column permissions](https://learn.microsoft.com/power-pages/security/column-permissions) ·
+  [Security best practices](https://learn.microsoft.com/power-pages/security/security-best-practices)
 - Full detail: `../../references/security-model.md`.

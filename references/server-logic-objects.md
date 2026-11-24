@@ -16,8 +16,8 @@ client script (over HTTP) or from Liquid during page render.
 
 | Object | What it does |
 |---|---|
-| `Server.Connector.HttpClient` | Call external services: `GetAsync(url, headers)`, `PostAsync(url, body, headers, contentType)`, `PutAsync`, `PatchAsync`, `DeleteAsync`. Body content types: `application/json`, `text/html`, `application/x-www-form-urlencoded` only. |
-| `Server.Connector.Dataverse` | CRUD + custom APIs: `CreateRecord(entitySetName, payload)`, `RetrieveRecord(...)`, `RetrieveMultipleRecords(entitySetName, options[, skipCache])`, `UpdateRecord(...)`, `DeleteRecord(...)`, `InvokeCustomApi(method, url[, payload])`. **Use the EntitySetName** (e.g. `accounts`). |
+| `Server.Connector.HttpClient` | Call external services: `GetAsync(url, headers)`, `PostAsync(url, body, headers, contentType)`, `PutAsync`, `PatchAsync`, `DeleteAsync`. Learn currently lists text, form URL-encoded, binary (pass a base64 string) and multipart form-data bodies. Outbound HTTPS needs **TLS 1.3**; APIs that don't support it fail. |
+| `Server.Connector.Dataverse` | CRUD + custom APIs: `CreateRecord(entitySetName, payload)`, `RetrieveRecord(entitySetName, id[, options[, skipCache]])`, `RetrieveMultipleRecords(entitySetName[, options[, skipCache]])`, `UpdateRecord(...)`, `DeleteRecord(...)`, `InvokeCustomApi(method, url[, payload])`. **Use the EntitySetName** (e.g. `accounts`). |
 | `Server.Connector.CloudFlow` | **Trigger a Power Automate cloud flow** — `TriggerAsync(flowId, payload)` (see below). |
 | `Server.SiteSetting` | `Get("Search/Enabled")` — read a site setting. |
 | `Server.EnvironmentVariable` | `get("SITEPATH")` — read an environment variable. |
@@ -100,6 +100,29 @@ long-running Dataverse/HTTP calls increase page response time — keep them ligh
 
 `Server.Context` properties: `ActivityId`, `FunctionName`, `ServerLogicName` (HTTP + Liquid);
 `Body`, `Headers`, `HttpMethod`, `QueryParameters`, `Url` (HTTP); `Input` (Liquid).
+
+## Site settings and outbound calls
+
+| Setting | Default | Effect |
+|---|---|---|
+| `ServerLogic/Enabled` | `true` | Turns the feature on or off. |
+| `ServerLogic/AllowedDomains` | all domains | Restricts which external domains `HttpClient` can call. Set it whenever a function calls out. |
+| `ServerLogic/TimeoutInSeconds` | `120` | Maximum execution time; can be raised to **240**. |
+| `ServerLogic/AllowNetworkingToAllDomains` | `true` | Allows networking across domains. |
+
+Tenant admins can **block outbound HTTP calls** from server logic per site to prevent data
+exfiltration; when that governance control is on, every outbound call fails. If an `HttpClient`
+call fails on one site but works on another, check that control before debugging the code.
+([Server logic overview](https://learn.microsoft.com/power-pages/configure/server-logic-overview) ·
+[Disable external service calls](https://learn.microsoft.com/power-pages/security/disable-external-service-calls))
+
+`skipCache`: Learn documents the optional `skipCache` argument on **both** `RetrieveRecord` and
+`RetrieveMultipleRecords`; pass it when a function must read a row that was just written. Learn
+documents no memory limit, so don't quote one.
+
+From Liquid, `{% serverlogic %}` returns `success`, `status_code` (`500` on an execution error),
+`data` (parsed JSON) and `raw_result` (unparsed). Treat `data` as untrusted: `| escape` every string
+before it reaches HTML. ([Liquid objects: serverlogic](https://learn.microsoft.com/power-pages/configure/liquid/liquid-objects#serverlogic))
 
 ## Limitations (authoritative — the sandbox is documented, not guesswork)
 

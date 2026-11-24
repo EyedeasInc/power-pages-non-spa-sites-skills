@@ -55,6 +55,7 @@ When both are installed, pick by task:
 | A change does not show on the site | `/pp-cache` |
 | Writing or debugging Liquid | `/pp-liquid` |
 | Site start, stop, restart, trial to production, visibility, delete | `/pp-website` |
+| What a site will cost: capacity packs vs pay-as-you-go | `/pp-licensing` |
 
 The `pp-*` skills that overlap with Microsoft's (`pp-bootstrap-migrate`, `pp-datamodel-migrate`,
 `pp-firewall`, `pp-headers`, `pp-website`, `pp-upload`) stay in this plugin for anyone who does not
@@ -127,6 +128,7 @@ word (`/pp-webtemplate`); action/CLI skills keep a hyphen (`/pp-datamodel-migrat
 | Skill | What it does |
 |---|---|
 | **`/pp-cache`** | Invalidate the portal cache so component changes actually show. |
+| **`/pp-licensing`** | Licensing in both directions: what N packs cover and whether the environment split is valid, or what to buy for N expected users (capacity packs, tiers, per-environment minimums, pay-as-you-go, cheapest mix). Bundled calculator over Microsoft Learn list prices. |
 
 ## Install
 
@@ -211,7 +213,7 @@ powerpages-non-spa-site/
 │  ├─ server-logic-objects.md
 │  ├─ site-settings-catalog.md
 │  └─ community-credits.md
-└─ skills/                             # 27 skills
+└─ skills/                             # 28 skills
    ├─ Content:     pp-webpage/ pp-pagetemplate/ pp-webtemplate/ pp-webfile/
    │               pp-contentsnippet/ pp-serverlogic/ pp-liquid/
    ├─ Nav/routing: pp-weblink/ pp-sitemarker/ pp-redirect/
@@ -219,7 +221,7 @@ powerpages-non-spa-site/
    ├─ Security:    pp-webrole/ pp-tablepermission/ pp-columnpermission/
    │               pp-pageaccessrule/ pp-headers/ pp-firewall/ pp-securityreview/
    ├─ Lifecycle:   pp-website/ pp-datamodel-migrate/ pp-download/ pp-upload/ pp-bootstrap-migrate/
-   └─ Utility:     pp-cache/
+   └─ Utility:     pp-cache/ pp-licensing/
 ```
 
 ## Agents, hooks & references

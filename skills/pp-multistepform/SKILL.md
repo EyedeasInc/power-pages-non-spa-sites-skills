@@ -4,7 +4,7 @@ description: "Create, edit, and delete multistep forms (mspp_webform + mspp_webf
 license: MIT
 metadata:
   author: Victor Dantas
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Multistep forms (wizards) on a Power Pages site — full configuration
@@ -100,6 +100,8 @@ name**), **prepopulate** (Value / Today's Date / Current User's Contact + *Ignor
 Value*), **set value on save** (Two-Option `true/false`, Option Set integer, Lookup GUID),
 **validation** (required, regex + messages, range/geolocation errors), and **description/
 instructions** (Above/Below field or Above label). `Section` / `Tab` rows relabel.
+Render-lookup-as-dropdown is for small static lists only: Site Checker flags dropdowns over
+**200** frequently changing records (see the form gotchas in `pp-basicform`).
 
 ## Step 5 — Notes / file attachments
 

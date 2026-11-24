@@ -49,6 +49,13 @@ bound to a web role (the `mspp_entitypermission_webrole` intersect).
 > assignment**: a Global permission is anonymous-reachable **only if it is bound to the Anonymous
 > Users role**. So the real risk is **Global + Anonymous Users role**. *(Refines a common shorthand;
 > the underlying mechanism is scope **and** role binding.)*
+>
+> The reverse is a consequence, not a documented rule: Contact, Account and Self scopes resolve
+> through the signed-in contact, so an anonymous visitor matches no rows under them. Data meant
+> for anonymous visitors therefore ends up on a Global permission bound to Anonymous Users; treat
+> every such permission as public data (Learn: "Treat anonymous table permissions as public data
+> access"). Admins can also block anonymous Dataverse access per site with the
+> [anonymous-access governance control](https://learn.microsoft.com/power-pages/security/disable-anonymous-access).
 
 **Verify bindings via the intersect directly.** An `$expand` from a permission or role reads *blind*
 under an app-only service principal and can make an over-broad grant look empty. Query
@@ -60,8 +67,17 @@ under an app-only service principal and can make an over-broad grant look empty.
   both allow the operation (GET→Read, POST→Create, PATCH→Write, DELETE→Delete). See
   `references/webapi-field-configuration.md`.
 - **Column permissions** (`pp-columnpermission`) add field-level restrictions on top of table
-  permissions. *(Note: Microsoft's official plugin covers table-level CRUD + scope only, not
+  permissions, **for the portals Web API only**. Forms, lists, Liquid, FetchXML and search don't
+  honour them. *(Microsoft's official plugin covers table-level CRUD + scope only, not
   column-level security — this plugin's `pp-columnpermission` fills that gap.)*
+- **Enhanced authorization** (preview, per site in the admin center; Power Pages Core
+  1.1.2605.258 or later) maps contacts to Dataverse system users and web roles to security roles.
+  On those sites column permissions are **bypassed** and Dataverse **column security profiles**
+  apply instead, across forms, lists and the Web API. Check which model a site uses before
+  reviewing or creating column-level security.
+- Learn: [Set column permissions](https://learn.microsoft.com/power-pages/security/column-permissions) ·
+  [Enable enhanced authorization](https://learn.microsoft.com/power-pages/security/unify-pages-security-with-dataverse) ·
+  [Security best practices](https://learn.microsoft.com/power-pages/security/security-best-practices)
 
 ## Forms & lists: the legacy flag is going away
 
@@ -99,6 +115,15 @@ Modelled on Microsoft's `audit-permissions` checks:
 8. Web API `fields` still using `*`, or exposing sensitive columns.
 9. Sensitive pages/tables reachable by the **Anonymous Users** role.
 10. Missing/weak security headers and CSP.
+
+Checks Microsoft's `/audit-permissions` doesn't run (see `pp-securityreview` check 8):
+
+11. Which **authorization model** the site uses (enhanced authorization on or off), and whether
+    sensitive columns are protected by the mechanism that model actually honours.
+12. **Download** actions on lists and subgrids that export sensitive columns.
+13. Table permissions and role bindings still **active on the live site** after they were removed
+    from dev or source control.
+14. **Cloud flows and server logic that trust a record ID** sent from the browser.
 
 ## Legacy-site exposure audit
 

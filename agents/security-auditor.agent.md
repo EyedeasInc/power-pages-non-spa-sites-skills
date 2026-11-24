@@ -33,13 +33,20 @@ unless a **table permission** on one of the visitor's **web roles** grants it.
    allow anonymous only via explicit permissions bound to the Anonymous Users role.
 6. **Forms & lists** — from June 2026 they enforce table permissions regardless of the legacy "Enable
    Table Permissions" flag; treat the flag as meaningless and require real permissions.
-7. **Column-level security** — recommend column permissions for sensitive fields exposed via forms,
-   lists, or the Web API.
+7. **Column-level security** — first check whether the site uses **enhanced authorization** (admin
+   center site details). Off: column permissions protect **only the portals Web API**, so sensitive
+   columns on forms, list views, Liquid, FetchXML or search are exposed regardless. On: column
+   permissions are bypassed; Dataverse column security profiles apply everywhere.
 8. **Security headers / CSP** — missing/weak CSP (or `unsafe-inline`/`unsafe-eval`), `X-Frame-Options`,
    `X-Content-Type-Options`, HSTS (note: HSTS and `Cache-Control` are platform-managed). Newer
    environments enforce stricter CSP.
 9. **Secrets in client content** — API keys/tokens hardcoded in web templates or JS web files.
-10. **Legacy exposure** — older sites may have lists/forms/`_odata`/`_api` feeds with no permissions;
+10. **Download actions** on lists and subgrids that export sensitive view columns to Excel.
+11. **Leftover permissions** — table permissions or role bindings still active live after removal
+    from dev or source control (uploads don't delete records).
+12. **Flows and server logic trusting a record ID** from the browser while using their own
+    connection; require a server-side ownership check.
+13. **Legacy exposure** — older sites may have lists/forms/`_odata`/`_api` feeds with no permissions;
     treat any unconfigured surface as internet-public.
 
 **How to read the live site:** use the Dataverse Web API / MCP to read `powerpagecomponent`, `mspp_*`

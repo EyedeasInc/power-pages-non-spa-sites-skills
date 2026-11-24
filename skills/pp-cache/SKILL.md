@@ -1,10 +1,10 @@
 ---
 name: pp-cache
-description: "Make Power Pages component changes visible by refreshing the portal's server cache (web templates, web files, content snippets, site settings, table permissions, web pages, page access rules). A PATCH to Dataverse updates the record but the running portal keeps serving the cached version. Default: restart the site with pac power-pages restart-website (reaches every instance, no portal sign in). Alternative: Clear cache on /_services/about, which only works for a signed in contact with the Administrators web role. WHEN: my change isn't showing on the portal, clear Power Pages cache, flush portal cache, portal still shows old version, invalidate cache, changes not appearing after edit, /_services/about, restart the site, force portal to refresh."
+description: "Make Power Pages component changes visible by refreshing the portal's server cache (web templates, web files, content snippets, site settings, table permissions, web pages, page access rules). A PATCH to Dataverse updates the record but the running portal keeps serving the cached version. Default: restart the site with pac power-pages restart-website (reaches every instance, no portal sign in). Alternative: Clear cache on /_services/about, which only works for a signed in contact whose web role has all website access permissions. WHEN: my change isn't showing on the portal, clear Power Pages cache, flush portal cache, portal still shows old version, invalidate cache, changes not appearing after edit, /_services/about, restart the site, force portal to refresh."
 license: MIT
 metadata:
   author: Victor Dantas
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Refresh the Power Pages portal cache
@@ -28,8 +28,8 @@ After `pp-webtemplate`, `pp-webfile` (also bump the URL cache buster, see that s
 | Method | Needs | Reaches | Use when |
 |---|---|---|---|
 | **1. Restart the site** (default) | `pac auth` on the site's environment | every instance | after any change, from an agent or a script |
-| 2. Clear cache on `/_services/about` | a browser session signed in as a contact with the **Administrators** web role | the instance that served the request | you're already signed in as a portal admin and want it now |
-| 3. Power Pages design studio **Sync** | maker access to the site | the studio preview and the site | you're working in the studio anyway |
+| 2. **Clear config** or **Clear cache** on `/_services/about` | a browser session signed in as a contact whose web role has **all website access permissions** (the Administrators role on starter sites) | the instance that served the request | you're already signed in as a portal admin and want it now |
+| 3. Power Pages design studio **Preview** or **Sync** | maker access to the site | the studio preview and the site | you're working in the studio anyway |
 
 ### 1. Restart the site (default)
 
@@ -50,17 +50,41 @@ Web API); passing that one fails.
 
 1. Open `<websiteUrl>/_services/about` in a browser **signed in to the portal** (`websiteUrl` comes
    from `pac power-pages get-website-by-id --id <SITEID> --json`, or a custom domain).
-2. The **Clear cache** button only appears for a contact with the **Administrators** web role.
-   Without that role the page shows version details only, and nothing is cleared.
-3. Select **Clear cache**. A plain `GET` of the URL, signed in or not, does **not** clear it.
+2. The buttons only appear for a contact whose web role has **all website access permissions**
+   (the **Administrators** role on starter sites). Without it the page shows version details only,
+   and nothing is cleared.
+3. Prefer **Clear config**: it refreshes configuration tables (web templates, snippets, site
+   settings, permissions) only. **Clear cache** also drops every cached data table and Learn warns
+   it can slow a busy live site, so use it seldom and off-peak. A plain `GET` of the URL, signed
+   in or not, clears nothing.
 
 Need the role? Assign the signed in contact to the **Administrators** web role with `pp-webrole`
 (dev and test sites only; never grant it to real users to work around caching).
 
-### 3. Design studio Sync
+### 3. Design studio Preview or Sync
 
-In Power Pages design studio for the site, select **Sync**. Reliable when the portal host
-doesn't resolve from your machine.
+In Power Pages design studio for the site, select **Preview** (Learn: it clears the cache) or
+**Sync**. Reliable when the portal host doesn't resolve from your machine.
+
+## The cache layers
+
+Four caches sit between a Dataverse change and a visitor's screen. Know which one you're fighting
+before you restart anything. ([How server-side caching works](https://learn.microsoft.com/power-pages/admin/clear-server-side-cache) ·
+[Content Delivery Network](https://learn.microsoft.com/power-pages/configure/configure-cdn))
+
+| Layer | Holds | Refreshes on its own | Clear it with |
+|---|---|---|---|
+| **Configuration cache** (server) | `mspp_*` components: web templates, web files, snippets, site settings, permissions, page rules | within **15 minutes** (Learn's SLA; can't be shortened) | restart, **Clear config**, studio Preview |
+| **Data cache** (server) | Dataverse business rows the site has read; per user, shared for anonymous users and Global-permission tables | at once for that table when **a site user** writes through the site; otherwise within **15 minutes** | restart or **Clear cache** |
+| **CDN** (when enabled) | static files by extension (`css, js, png, svg, jpg, woff2`…; set by `ContentDeliveryNetwork/FileExtensions`) | edge expiry | **Purge cache** in the Power Platform admin center |
+| **Browser** | CSS and JS already downloaded | browser rules | bump the `?v=` cache buster (`pp-webfile`), hard refresh |
+
+Learn's own FAQ: changes made by plugins, workflows or flows to *other* tables are never
+guaranteed to appear immediately; only the primary record a site user writes is. Design for the
+15-minute lag instead of restarting on every back-end change.
+
+Output caching: keep `Footer/OutputCache/Enabled` on (Site Checker flags it off), and never put
+user-specific Liquid in cached header or footer markup; wrap it in the substitution tag.
 
 ### Browser cache (CSS and JS)
 
@@ -93,6 +117,8 @@ Reload a real page (not the API) after the restart finishes. If it still shows t
   cache before you judge whether they work.
 - Don't loop restarts: each one takes the site offline for a minute or two.
 - Restarting doesn't fix a component saved to the **wrong site**; check that first.
-- List and form reads are cached (community reports about 15 minutes). Portal writes clear the
-  cache, but Dataverse side changes (flows, plugins, model driven app edits) don't; design for that
-  lag rather than restarting on every edit.
+- List and form reads are cached for up to **15 minutes** (Learn). Writes made through the site
+  clear that table's cache for everyone, but Dataverse side changes (flows, plugins, model-driven
+  app edits) don't; design for that lag rather than restarting on every edit.
+- All configuration tables must stay enabled for change tracking; if one table stays stale for
+  long, run Site Checker, which lists tables missing change tracking.

@@ -4,7 +4,7 @@ description: "Write correct, safe Liquid in web templates and page content on a 
 license: MIT
 metadata:
   author: Victor Dantas
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Write correct, safe Liquid on a Power Pages site
@@ -113,11 +113,25 @@ escaped.
 ```liquid
 <h2>{{ product.mspp_name | escape }}</h2>
 <p>{{ product.mspp_description | escape }}</p>
-<a href="/detail?id={{ product.mspp_productid | url_encode }}">Details</a>
+<a href="/detail?id={{ product.mspp_productid | url_escape }}">Details</a>
 ```
 
-- Use `| escape` for values placed in **element bodies and quoted attribute values**.
-- Use `| url_encode` for values placed into a **URL / query string**.
+Power Pages documents four escape filters; pick the one for the destination
+([Liquid filters: escape filters](https://learn.microsoft.com/power-pages/configure/liquid/liquid-filters#escape-filters)):
+
+| Filter | Use for | Example output |
+|---|---|---|
+| `escape` | Text in element bodies and quoted attribute values. The default. | `&lt;p&gt;test&lt;/p&gt;` |
+| `html_safe_escape` | A field that **must** render as HTML (rich text a user can edit). Keeps safe markup, strips scripts and event handlers such as `onerror`. | `<img src="images/myimage.jpg">` |
+| `url_escape` | A value placed into a **URL or query string**. | `This+%26+that%2F%2F` |
+| `xml_escape` | Values written into XML output (RSS feeds, sitemaps). | `&lt;p&gt;test&lt;/p&gt;` |
+
+- Release 9.3.8.x and later escape the **`user`** and **`request`** objects by default
+  (`Site/EnableDefaultHtmlEncoding`). That covers those two objects only: `entities`, FetchXML
+  results, `entityview` rows, `settings`, snippets and `serverlogic` results are **not**
+  auto-escaped. Don't turn the default off.
+- Values from `{% serverlogic %}` are untrusted input too: escape `result.data` strings
+  before they reach HTML.
 - Only skip escaping for a field that is *intentionally* trusted rich HTML authored by a maker
   (e.g. a page-copy field), never for anything a portal user or external system can write.
 
@@ -207,6 +221,6 @@ Hard rules:
 
 ## Microsoft docs & shared references
 
-- Pipe nested snippet/site-marker Liquid through **`| liquid`**; mind `forloop.index` (1-based) vs `index0`; escape Dataverse values with `| escape`.
+- Pipe nested snippet/site-marker Liquid through **`| liquid`**; mind `forloop.index` (1-based) vs `index0`; escape Dataverse values with `| escape` (or `html_safe_escape` / `url_escape` / `xml_escape` by destination).
 - Call server logic during render with **`{% serverlogic name:'rec' operation:'fn' input:'..' output:result %}`** (server-side, no CSRF).
 - Full detail: `../../references/web-template-components.md`, `../../references/server-logic-objects.md`.
