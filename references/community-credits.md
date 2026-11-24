@@ -36,6 +36,8 @@ wins and the correction is stated in the reference.
 - Liquid filters — https://learn.microsoft.com/power-pages/configure/liquid/liquid-filters
 - How server-side caching works — https://learn.microsoft.com/power-pages/admin/clear-server-side-cache
 - Site Checker performance — https://learn.microsoft.com/power-pages/admin/site-checker-performance
+- Power Platform licensing FAQ (Power Pages) — https://learn.microsoft.com/power-platform/admin/powerapps-flow-licensing-faq#power-pages
+- Pay-as-you-go meters — https://learn.microsoft.com/power-platform/admin/pay-as-you-go-meters
 - Set page permissions — https://learn.microsoft.com/power-pages/security/page-security
 
 ## Alignment reference
