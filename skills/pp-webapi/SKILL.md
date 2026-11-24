@@ -4,7 +4,7 @@ description: "Enable, consume, audit, and disable the Power Pages Web API (/_api
 license: MIT
 metadata:
   author: Victor Dantas
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # The Power Pages Web API for a table — enable, consume, audit, disable
@@ -180,6 +180,40 @@ Set these up with the **pp-tablepermission** workflow — enabling the Web API i
 you almost always need both. If a page "silently returns nothing," check the table permission and its
 web-role binding **before** re-checking the site settings.
 
+### FetchXML through the Web API
+
+`GET /_api/<entityset>?fetchXml=<url-encoded FetchXML>` runs a FetchXML query through the same
+site settings and table permissions. Reach for it when OData can't express the read: multi-level
+`link-entity` joins, aggregates, or reads that would need a chain of Parental/Contact/Account
+permissions resolved together. ([Query data using portals Web API](https://learn.microsoft.com/power-pages/configure/read-operations#query-records-using-fetchxml))
+
+```javascript
+const fetch = `<fetch top="50">
+  <entity name="mspp_order">
+    <attribute name="mspp_name" />
+    <link-entity name="mspp_product" from="mspp_productid" to="mspp_productid" alias="p">
+      <attribute name="mspp_name" />
+    </link-entity>
+  </entity>
+</fetch>`;
+webapi.safeAjax({
+  type: "GET",
+  url: "/_api/mspp_orders?fetchXml=" + encodeURIComponent(fetch),
+  success: function (res) { /* res.value */ }
+});
+```
+
+- **Encode the whole query** with `encodeURIComponent`. An unencoded `#`, `&` or `+` (in a
+  `like` value, for example) cuts the query or changes it, which shows up as a filter that
+  silently returns everything or nothing.
+- Every `attribute` in the FetchXML, including linked ones, still needs to be in
+  `Webapi/<table>/fields` for its table, and each linked table needs its own Web API settings and
+  table permission.
+- FetchXML responses omit columns whose value is null (Dataverse behaviour); code for missing
+  properties, not `null`.
+- Use `<fetch count="..." page="...">` or paging cookies for large reads; simple paging stops at
+  50,000 rows.
+
 ## Step 5 — Publish & verify
 
 1. **Clear the portal cache:** site settings are cached — open `/_services/about` and click
@@ -228,5 +262,5 @@ from `--url` or the env var of the same name.
 ## Microsoft docs & shared references
 
 - **Wildcard `Webapi/<table>/fields = *` is being removed** — no new sites Aug 2026; removed for **all sites Sept 14, 2026**. Use an explicit least-privilege column list, or set `Webapi/<table>/UseFieldsFromView = True` with a public **`Power Pages Web API Columns`** view (site v9.8.8.x+). No column is exempt (list file/image/rich-text explicitly).
-- The Web API serves **data tables only** — `mspp_`/`adx_` config tables are unsupported. A `GET` with nested Parental/Contact/Account permissions may need **FetchXML**.
+- The Web API serves **data tables only** — `mspp_`/`adx_` config tables are unsupported. A `GET` with nested Parental/Contact/Account permissions may need **FetchXML** (`?fetchXml=`, see Step 4).
 - Full detail: `../../references/webapi-field-configuration.md`.

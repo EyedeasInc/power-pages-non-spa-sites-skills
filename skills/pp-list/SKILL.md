@@ -4,7 +4,7 @@ description: "Create, edit, and delete lists (mspp_entitylist) on a non-SPA (enh
 license: MIT
 metadata:
   author: Victor Dantas
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Lists on a Power Pages site — full configuration
@@ -47,7 +47,9 @@ POST /api/data/v9.2/mspp_entitylists
 The **Options** tab (Basic + Advanced) drives actions and presentation:
 
 **View Actions** (toolbar, above the grid): **Create**, **Download** (exports to `.xlsx` via
-FetchXML). **Item Actions** (per row, each gated by table permissions): **Details**, **Edit**,
+FetchXML). Download exports **every column in the view** for every row the user's table
+permissions allow, including columns you narrowed or hid in the page. Point the list at a view
+without sensitive columns, or leave Download off (`pp-securityreview` check 8b). **Item Actions** (per row, each gated by table permissions): **Details**, **Edit**,
 **Delete**, **Workflow** (on-demand), **Activate**, **Deactivate**, plus per-table specials
 (Resolve/Cancel Case on `incident`, Win/Lose on `opportunity`, etc.).
 
@@ -70,8 +72,15 @@ Webpage/URL* on completion (recommended for Delete).
 - **My / Account filter:** set **Portal User Attribute** and/or **Account Attribute** to scope
   rows to the signed-in user and/or their parent Customer account. If both are set, the page shows
   a *My / account* switcher. Also filterable by current website.
-- **Search:** enable search (with placeholder text). Exclude large text columns from search — they
-  hurt performance (query anti-pattern).
+- **Search:** enable search (with placeholder text). List search runs a FetchXML query over the
+  **columns defined in the list's view**, so a column must be in the view to be searchable
+  ([Search overview](https://learn.microsoft.com/power-pages/configure/search/overview)). Keep large
+  text columns out of searchable views — they hurt performance (query anti-pattern).
+  This is separate from **global search**, which indexes the `Portal Search` view
+  (`Search/IndexQueryName`) through Dataverse search.
+- **Sorting on related columns:** visitors can sort by a column header when the column belongs to
+  the list's table. For columns from related (linked) tables, add the site setting
+  `Site/EnableSortingOnLinkedEntities` = `true`. ([Sort lists](https://learn.microsoft.com/power-pages/configure/sort-lists))
 
 ## Step 4 — Alternate views
 
@@ -95,11 +104,32 @@ see `pp-webapi`. Don't build new integrations on the OData feed.
 
 ## Step 6 — Custom scripting
 
-A list is rendered by a **list web template**; custom behavior goes in the template's Liquid/JS
-(edit via `pp-webtemplate`) or in page JS on the hosting page — there's no per-list "Custom
-JavaScript" column like forms have. Read list data client-side via the **Web API** (`pp-webapi`),
-and always escape record values before injecting them into the DOM (a `pp-securityreview` XSS
-check).
+Lists have a **Custom JavaScript** box on the **Options** tab in the Portal Management app; its
+script is added at the bottom of the page. Read an existing list to find the column that stores
+it before writing it through the Web API. Larger changes go in the list web template's Liquid/JS
+(`pp-webtemplate`) or in page JS on the hosting page.
+([Add custom JavaScript to a list](https://learn.microsoft.com/power-pages/configure/add-custom-javascript-list))
+
+The grid loads its rows **asynchronously**, so code that runs on `document.ready` sees an empty
+table. Listen for the `loaded` event, which fires after every load, page change and sort:
+
+```javascript
+$(document).ready(function () {
+  $(".entitylist.entity-grid").on("loaded", function () {
+    $(this).children(".view-grid").find("td[data-attribute='mspp_status']").each(function () {
+      var value = $(this).data("value");   // the raw value, not the formatted text
+      // style or annotate the cell here
+    });
+  });
+});
+```
+
+**Modern lists** use the `$pages` client API instead: `list.on("loaded", handler)` receives
+`{ rows }`, plus `rowclick` and `cellclick` events (a registered `cellclick` suppresses `rowclick`).
+([Client API lists](https://learn.microsoft.com/power-pages/configure/client-api/lists#list-events))
+
+Read list data client-side via the **Web API** (`pp-webapi`), and always escape record values
+before injecting them into the DOM (a `pp-securityreview` XSS check).
 
 ## Step 7 — AI features (preview)
 

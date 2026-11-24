@@ -4,7 +4,7 @@ description: "Run a security review of a non-SPA (enhanced-data-model, mspp_*) P
 license: MIT
 metadata:
   author: Victor Dantas
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Security review — non-SPA Power Pages site
@@ -63,7 +63,7 @@ Treat the scan as **complementary, not a substitute**: it catches configuration/
 issues the platform knows about, but it does **not** see the platform-specific application
 flaws below — stored XSS from raw Dataverse interpolation, Web API `*` over-exposure, blind
 table-permission gaps, or Liquid `nil != blank` leaks. Fold the scan's findings into the
-same report, then work the seven checks for everything the scanner can't reach.
+same report, then work the eight checks for everything the scanner can't reach.
 
 > **Web Application Firewall (WAF) & IP allow-list** are remediation levers in the same
 > command group: `get-waf-status` / `get-waf-rules` / `enable-waf` / `update-waf-policy-settings`
@@ -71,7 +71,7 @@ same report, then work the seven checks for everything the scanner can't reach.
 > to restrict who can reach the site. These are defense-in-depth on top of fixing the app
 > itself — a WAF in front of an unescaped sink is not a substitute for escaping it.
 
-## The seven checks
+## The eight checks
 
 Each is detailed in `references/review-checklist.md`. In priority order:
 
@@ -212,6 +212,45 @@ keys, GU();-looking function keys in URLs, etc.
 (Power Pages **server logic** / a cloud flow) so the secret stays out of the browser, and
 **rotate** the exposed credential — assume it is compromised.
 
+### 8. Platform gaps Microsoft's audit doesn't cover
+
+Microsoft's `/audit-permissions` already checks open registration and Global scope on non-SPA
+sites. These four checks are not in it:
+
+**a. Authorization model vs column security.** Learn: column permissions apply **only to the
+portals Web API**, and sites with **enhanced authorization** (preview) bypass them in favour of
+Dataverse column security profiles.
+- *Check:* in the admin center site details, is **Enable Enhanced Authorization** on? If **off**,
+  list sensitive columns that appear on forms, list views, Liquid, FetchXML or search: column
+  permissions don't protect those paths. If **on**, any `mspp_columnpermission*` records are dead
+  configuration; confirm the sensitive columns have Dataverse column security profiles instead.
+- *Fix:* remove sensitive columns from the forms and views, or move the site to column security
+  profiles (`pp-columnpermission` explains both).
+
+**b. Download on lists and subgrids.** A **Download** action exports the rows and columns the
+view returns to Excel, so a column that is merely hidden in the page layout still leaves in the
+file. *(Practitioner note; the subgrid Download action is documented on Learn.)*
+- *Check:* find lists and form subgrids with a Download action and compare their view columns
+  with what the role should see.
+- *Fix:* drop the action, or point it at a view without the sensitive columns (`pp-list`).
+
+**c. Permissions removed in dev but still live.** Uploads don't delete records, and a direct edit
+in a target environment creates an unmanaged layer that hides later managed updates (Learn,
+Troubleshoot Power Pages ALM). A permission you deleted in dev or in Git can stay active.
+- *Check:* compare the live `mspp_entitypermission` rows and their role bindings with the
+  intended set in source control.
+- *Fix:* deactivate or delete the leftover rows on the live site (`pp-tablepermission`), then
+  flush the cache.
+
+**d. Flows and server logic that trust a row ID.** A cloud flow or server logic function that
+takes a record ID from the browser and acts on it with its **own** connection skips table
+permissions: anyone who can call it can pass someone else's ID. Learn recommends the Power Pages
+trigger, web-role access on the flow, and least-privilege connections.
+- *Check:* for each flow and server logic function, find inputs that name a record and confirm
+  the code verifies the caller owns that record (for example, by re-reading it through the
+  signed-in user's context, or comparing against `Server.User`).
+- *Fix:* add the ownership check server-side; never rely on the page to send only valid IDs.
+
 ## Findings report format
 
 Produce one table (highest severity first). Fill a row per confirmed finding:
@@ -245,5 +284,6 @@ Fixes are single-component live patches, not a site re-upload:
 ## Microsoft docs & shared references
 
 - Model is **deny-by-default**; **Global scope is anonymous-reachable only when bound to the Anonymous Users role**; from **June 2026** forms/lists enforce permissions regardless of the legacy "Enable Table Permissions" flag.
+- Column permissions cover the portals Web API only; enhanced authorization bypasses them for Dataverse column security profiles ([Set column permissions](https://learn.microsoft.com/power-pages/security/column-permissions), [Security best practices](https://learn.microsoft.com/power-pages/security/security-best-practices)).
 - For a deep, isolated audit, spawn the **`powerpages-non-spa-site:security-auditor`** agent.
 - Full detail: `../../references/security-model.md`, `../../references/webapi-field-configuration.md`.

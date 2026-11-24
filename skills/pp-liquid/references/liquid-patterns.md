@@ -46,7 +46,7 @@ never for a collection / query result.
   <ul>
   {% for p in products.results.entities %}
     <li>
-      <a href="/product?id={{ p.mspp_productid | url_encode }}">{{ p.mspp_name | escape }}</a>
+      <a href="/product?id={{ p.mspp_productid | url_escape }}">{{ p.mspp_name | escape }}</a>
       — {{ p.mspp_price }}
     </li>
   {% endfor %}
@@ -93,7 +93,7 @@ never for a collection / query result.
 ```liquid
 <h2>{{ record.mspp_name | escape }}</h2>            {% comment %} element body {% endcomment %}
 <a title="{{ record.mspp_note | escape }}">open</a> {% comment %} attribute value {% endcomment %}
-<a href="/d?id={{ record.mspp_id | url_encode }}">  {% comment %} URL / query string {% endcomment %}
+<a href="/d?id={{ record.mspp_id | url_escape }}">  {% comment %} URL / query string {% endcomment %}
 ```
 
 Never emit a portal-user-writable field without `escape`. Only skip it for a field that is

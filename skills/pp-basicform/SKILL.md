@@ -4,7 +4,7 @@ description: "Create, edit, and delete basic forms (mspp_entityform + mspp_entit
 license: MIT
 metadata:
   author: Victor Dantas
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Basic forms on a Power Pages site — full configuration
@@ -112,7 +112,8 @@ POST /api/data/v9.2/mspp_entityformmetadatas
 ```
 
 For **Attribute** rows the surface is rich (mirror of multistep metadata):
-- **Control style:** radio-button option sets (vertical/horizontal), *Render Lookup as Dropdown*,
+- **Control style:** radio-button option sets (vertical/horizontal), *Render Lookup as Dropdown*
+  (small static lists only; see the 200-record gotcha below),
   *Code component* (PCF), constant-sum / rank-order / multiple-choice / matrix controls (need a
   *Group Name*), *Randomize Option Set Values*, *CSS Class*. **Choice columns don't appear in the
   picker — type the logical name into `Attribute Logical Name`.**
@@ -187,6 +188,27 @@ fires, validation and file upload work, and actions respect permissions.
   `#<logicalname>_label`; the platform puts `label="Select"` on blank `<option>`s, which wins over their text, so
   set `label` and `aria-label` when you rename them. Wrap `entityFormClientValidate` to change values on submit.
 - Render it with `{% entityform name: '<form name>' %}` in a web template.
+
+## Form gotchas from the community, checked against Learn (November 2026)
+
+- **Lookup as dropdown, 200 rows.** Learn's Site Checker flags a lookup rendered as a dropdown
+  once it lists more than **200** records that change often: the page renders every option on
+  each load and can slow the whole site. Keep dropdown mode for small static lists (countries,
+  states); use the lookup modal or a custom control fed by the Web API for anything larger.
+  ([Site Checker performance](https://learn.microsoft.com/power-pages/admin/site-checker-performance#basic-form-lookup-configuration))
+- **Lookup modal settings** (`Portal/Lookup/Modal/*`) are community-cataloged and **not on
+  Learn**; test each one on a dev site first (`../../references/site-settings-catalog.md`).
+- **Date fields.** The column's Dataverse behaviour decides time zone handling: **Date Only** for
+  birth dates and due dates, **User Local** for timestamps. Both Date Only and Time-Zone
+  Independent are permanent once saved, so choose before the form goes live. Override display
+  formats with `DateTime/DateFormat`, `DateTime/TimeFormat`, `DateTime/DateTimeFormat`.
+  ([Date and time fields](https://learn.microsoft.com/power-pages/configure/behavior-format-date-time-field))
+- **Inactive records may open read-only in Edit mode.** Practitioners report that an edit form
+  shows a record whose `statecode` isn't Active as read-only. This is **not on Learn**; if an
+  edit form unexpectedly renders read-only, check the record's status first.
+- **Hidden isn't secure.** Hiding a field with metadata or JavaScript still sends its value to
+  the browser, and column permissions don't apply to forms (they cover the Web API only). Keep
+  sensitive columns off the Dataverse form itself.
 
 ## Field & option reference
 
