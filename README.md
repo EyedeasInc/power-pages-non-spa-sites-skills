@@ -1,5 +1,17 @@
 # Power Pages non-SPA site toolkit (Claude Code & GitHub Copilot plugin)
 
+> **This plugin has moved to [EyedeasInc/hero-skills](https://github.com/EyedeasInc/hero-skills).**
+> New versions are published there, in [plugins/power-pages-non-spa-site](https://github.com/EyedeasInc/hero-skills/tree/main/plugins/power-pages-non-spa-site).
+> The plugin name is the same, but install it from the new marketplace:
+>
+> ```text
+> /plugin marketplace add EyedeasInc/hero-skills
+> /plugin install powerpages-non-spa-site@hero-skills
+> ```
+>
+> This repository is kept for reference and no longer receives updates.
+
+
 Skills for **provisioning**, building, integrating, and **securing** non-SPA **Power Pages** sites —
 the Dataverse-backed Studio/Liquid sites on the **enhanced data model** (`mspp_*` tables +
 `powerpagecomponent`). This is a community companion to Microsoft's
